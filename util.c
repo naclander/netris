@@ -238,6 +238,12 @@ ExtFunc long GetTimeval(struct timeval *tv)
 	return tv->tv_sec * 1000000 + tv->tv_usec;
 }
 
+void die(char *msg)
+{
+	perror(msg);
+	exit(1);
+}
+
 static long SetITimer1(long interval, long value)
 {
 	struct itimerval it, old;
@@ -260,13 +266,7 @@ ExtFunc long SetITimer(long interval, long value)
 	return old;
 }
 
-ExtFunc volatile void die(char *msg)
-{
-	perror(msg);
-	exit(1);
-}
-
-ExtFunc volatile void fatal(char *msg)
+void fatal(char *msg)
 {
 	CleanupScreens ();
 	fprintf(stderr, "%s\n", msg);
