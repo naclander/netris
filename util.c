@@ -238,7 +238,7 @@ ExtFunc long GetTimeval(struct timeval *tv)
 	return tv->tv_sec * 1000000 + tv->tv_usec;
 }
 
-void die(char *msg)
+ExtFunc void die(char *msg)
 {
 	perror(msg);
 	exit(1);
@@ -266,7 +266,7 @@ ExtFunc long SetITimer(long interval, long value)
 	return old;
 }
 
-void fatal(char *msg)
+ExtFunc void fatal(char *msg)
 {
 	CleanupScreens ();
 	fprintf(stderr, "%s\n", msg);
@@ -321,7 +321,7 @@ ExtFunc void AddEventGen(EventGenRec *gen)
 
 ExtFunc void RemoveEventGen(EventGenRec *gen)
 {
-	/* assert(gen->next != NULL);	/* Be more forgiving, for SIGINTs */
+	// assert(gen->next != NULL);	/* Be more forgiving, for SIGINTs */
 	if (gen->next) {
 		while (nextGen->next != gen)
 			nextGen = nextGen->next;
