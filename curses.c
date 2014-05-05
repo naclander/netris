@@ -22,6 +22,7 @@
 #include "netris.h"
 #include <sys/types.h>
 #include <unistd.h>
+#include <term.h>
 #include <curses.h>
 #include <string.h>
 #include <stdlib.h>
