@@ -35,7 +35,7 @@ static EventGenRec robotGen =
 		{ NULL, 0, FT_read, -1, RobotGenFunc, EM_robot };
 
 static int robotProcess;
-static FILE *toRobot;
+static FILE *toRobot = NULL;
 static int toRobotFd, fromRobotFd;
 
 static char robotBuf[128];
@@ -112,10 +112,13 @@ ExtFunc void RobotTimeStamp(void)
 ExtFunc void CloseRobot(void)
 {
 	RemoveEventGen(&robotGen);
-	if (robotProcess > 0)
-		RobotCmd(1, "Exit\n");
-	fclose(toRobot);
-	close(fromRobotFd);
+	if(toRobot) {
+		if (robotProcess > 0)
+			RobotCmd(1, "Exit\n");
+		fclose(toRobot);
+		close(fromRobotFd);
+		toRobot = NULL;
+	}
 }
 
 static MyEventType RobotGenFunc(EventGenRec *gen, MyEvent *event)
