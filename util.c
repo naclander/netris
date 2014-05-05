@@ -74,7 +74,7 @@ ExtFunc void Usage(void)
 	  "  -p <port>	Set port number (default is %d)\n"
 	  "  -k <keys>	Remap keys.  The argument is a prefix of the string\n"
 	  "		  containing the keys in order: left, rotate, right, drop,\n"
-	  "		  down-faster, toggle-spying, pause, faster, redraw.\n"
+	  "		  down-faster, toggle-spying, pause, faster, redraw, new.\n"
 	  "		  \"^\" prefixes controls.  (default is \"%s\")\n"
 	  "  -i <sec>	Set the step-down interval, in seconds\n"
 	  "  -r <robot>	Execute <robot> (a command) as a robot controlling\n"

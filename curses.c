@@ -201,6 +201,8 @@ ExtFunc void InitScreen(int scr)
 	for (y = boardVisible[scr] - 1; y >= 0; --y) {
 		move(boardYPos[scr] - y, boardXPos[scr] - 1);
 		addch('|');
+		for (x = boardWidth[scr] - 1; x >= 0; --x)
+			addstr("  ");
 		move(boardYPos[scr] - y, boardXPos[scr] + 2 * boardWidth[scr]);
 		addch('|');
 	}
@@ -256,6 +258,23 @@ ExtFunc void PlotUnderline(int scr, int x, int flag)
 
 ExtFunc void ShowDisplayInfo(void)
 {
+	move(statusYPos - 3, statusXPos);
+	printw("Won:  %3d", won);
+	move(statusYPos - 2, statusXPos);
+	printw("Lost: %3d", lost);
+
+	move(statusYPos - 1, statusXPos);
+	switch(gameState) {
+	case STATE_WAIT_CONNECTION:
+		addstr("Waiting for opponent...      ");
+		break;
+	case STATE_WAIT_KEYPRESS:
+		addstr("Press the key for a new game.");
+		break;
+	default:
+		addstr("                             ");
+	}
+
 	move(statusYPos - 9, statusXPos);
 	printw("Seed: %d", initSeed);
 	clrtoeol();

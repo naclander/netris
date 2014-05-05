@@ -36,6 +36,18 @@ static int oldFalling[MAX_SCREENS][MAX_BOARD_WIDTH];
 
 ExtFunc void InitBoard(int scr)
 {
+	int s,w,h;
+
+	for(s = 0 ; s < MAX_SCREENS ; s++)
+		for(h = 0 ; h < MAX_BOARD_HEIGHT ; h++)
+			for(w = 0 ; w < MAX_BOARD_WIDTH ; w++) {
+				board[s][h][w] = 0;
+				oldBoard[s][h][w] = 0;
+				changed[s][h] = 0;
+				falling[s][w] = 0;
+				oldFalling[s][w] = 0;
+			}
+
 	boardHeight[scr] = MAX_BOARD_HEIGHT;
 	boardVisible[scr] = 20;
 	boardWidth[scr] = 10;
