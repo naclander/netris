@@ -42,6 +42,8 @@ static int isServer, lostConn, gotEndConn;
 
 ExtFunc void InitNet(void)
 {
+	lostConn = 0;
+	gotEndConn = 0;
 	AtExit(CloseNet);
 }
 
