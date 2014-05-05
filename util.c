@@ -267,6 +267,7 @@ ExtFunc volatile void die(char *msg)
 
 ExtFunc volatile void fatal(char *msg)
 {
+	CleanupScreens ();
 	fprintf(stderr, "%s\n", msg);
 	exit(1);
 }

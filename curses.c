@@ -57,6 +57,7 @@ static EventGenRec keyGen =
 static int boardYPos[MAX_SCREENS], boardXPos[MAX_SCREENS];
 static int statusYPos, statusXPos;
 static int haveColor;
+static int screens_dirty = 0;
 
 static char *term_vi;	/* String to make cursor invisible */
 static char *term_ve;	/* String to make cursor visible */
@@ -98,6 +99,7 @@ ExtFunc void InitScreens(void)
 #endif
 
 	AtExit(CleanupScreens);
+	screens_dirty = 1;
 	RestoreSignals(NULL, &oldMask);
 
 	cbreak();
@@ -116,9 +118,12 @@ ExtFunc void InitScreens(void)
 
 ExtFunc void CleanupScreens(void)
 {
-	RemoveEventGen(&keyGen);
-	endwin();
-	OutputTermStr(term_ve, 1);
+	if (screens_dirty) {
+		RemoveEventGen(&keyGen);
+		endwin();
+		OutputTermStr(term_ve, 1);
+		screens_dirty = 0;
+	}
 }
 
 ExtFunc void GetTermcapInfo(void)
