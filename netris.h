@@ -182,6 +182,11 @@ EXT char scratch[1024];
 extern ShapeOption stdOptions[];
 extern char *version_string;
 
+EXT int myLinesCleared;
+EXT int enemyLinesCleared;
+EXT int myTotalLinesCleared;
+EXT int enemyTotalLinesCleared;
+
 #include "proto.h"
 
 #endif /* NETRIS_H */

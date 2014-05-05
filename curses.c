@@ -258,6 +258,12 @@ ExtFunc void PlotUnderline(int scr, int x, int flag)
 
 ExtFunc void ShowDisplayInfo(void)
 {
+	if (game == GT_classicTwo) {
+		move(statusYPos - 5, statusXPos);
+		printw("Enemy lines: %3d/%4d", enemyLinesCleared, enemyTotalLinesCleared);
+	}
+	move(statusYPos - 4, statusXPos);
+	printw("My lines:    %3d/%4d", myLinesCleared, myTotalLinesCleared);
 	move(statusYPos - 3, statusXPos);
 	printw("Won:  %3d", won);
 	move(statusYPos - 2, statusXPos);
@@ -282,7 +288,7 @@ ExtFunc void ShowDisplayInfo(void)
 	printw("Speed: %dms", speed / 1000);
 	clrtoeol();
 	if (robotEnable) {
-		move(statusYPos - 6, statusXPos);
+		move(statusYPos - 7, statusXPos);
 		if (fairRobot)
 			addstr("Controlled by a fair robot");
 		else
@@ -290,7 +296,7 @@ ExtFunc void ShowDisplayInfo(void)
 		clrtoeol();
 	}
 	if (opponentFlags & SCF_usingRobot) {
-		move(statusYPos - 5, statusXPos);
+		move(statusYPos - 6, statusXPos);
 		if (opponentFlags & SCF_fairRobot)
 			addstr("The opponent is a fair robot");
 		else

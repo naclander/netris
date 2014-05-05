@@ -103,6 +103,7 @@ ExtFunc void OneGame(int scr, int scr2)
 	int key;
 	char *p, *cmd;
 
+	myLinesCleared = enemyLinesCleared = 0;
 	speed = stepDownInterval;
 	ResetBaseTime();
 	InitBoard(scr);
@@ -297,7 +298,15 @@ ExtFunc void OneGame(int scr, int scr2)
 							DropPiece(scr2);
 							break;
 						case NP_clear:
-							ClearFullLines(scr2);
+							{
+								int cleared = ClearFullLines(scr2);
+								if (cleared) {
+									enemyLinesCleared += cleared;
+									enemyTotalLinesCleared += cleared;
+									ShowDisplayInfo();
+									RefreshScreen();
+								}
+							}
 							break;
 						case NP_insertJunk:
 						{
@@ -343,7 +352,12 @@ ExtFunc void OneGame(int scr, int scr2)
 	nextPiece:
 		dropMode = 0;
 		FreezePiece(scr);
-		linesCleared = ClearFullLines(scr);
+		myLinesCleared += linesCleared = ClearFullLines(scr);
+		myTotalLinesCleared += linesCleared;
+		if (linesCleared) {
+			ShowDisplayInfo();
+			RefreshScreen();
+		}
 		if (linesCleared > 0 && spied)
 			SendPacket(NP_clear, 0, NULL);
 		if (game == GT_classicTwo && linesCleared > 1) {
