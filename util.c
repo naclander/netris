@@ -20,6 +20,7 @@
  */
 
 #include "netris.h"
+#include <time.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>

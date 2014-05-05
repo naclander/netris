@@ -21,6 +21,7 @@
 
 #define NOEXT
 #include "netris.h"
+#include <time.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
