@@ -36,7 +36,7 @@ static EventGenRec alarmGen =
 		{ &alarmGen, 0, FT_read, -1, AlarmGenFunc, EM_alarm };
 static EventGenRec *nextGen = &alarmGen;
 
-static myRandSeed = 1;
+static int myRandSeed = 1;
 
 static struct timeval baseTimeval;
 
