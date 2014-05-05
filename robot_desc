@@ -1,0 +1,225 @@
+$Id: robot_desc,v 1.4 1999/05/16 06:56:30 mhw Exp $
+
+
+GENERAL PROTOCOL
+================
+When you pass the "-r <robot>" option to Netris, it launches
+"/bin/sh -c <robot>" as a subprocess and communicates to it via pipes.
+
+The robot reads events from Netris through stdin, and writes commands to
+stdout.  All exchanges are ASCII lines composed of tokens separated by
+spaces.  The first token in a line is the name of the command.
+
+The robot should ignore commands which it doesn't recognize.  The protocol
+may be extended by adding extra commands without incrementing the version
+number.  The version number will only be increased when a command cannot
+be safely ignored.
+
+Netris will also ignore commands which it doesn't recognize, for the same
+reason.
+
+
+INITIALIZATION
+==============
+The initial exchange between Netris and the robot is Version negotiation.
+Each sends a "Version <num>" line to the other, and the lowest version is
+used.  Currently, the robot protocol version is 1.
+
+Next, Netris sends "GameType <type>", there <type> is either OnePlayer
+or ClassicTwo.  There may be other games in the future.
+
+Then Netris sends "BoardSize <player> <height> <width>" for each player.
+<player> is 0 for the computer player and 1 for the opponent, if any.
+Other numbers may be used in the future.
+
+For each opponent, Netris sends "Opponent <player> <username> <host>".
+<host> is not necessarily a fully qualified host name, unfortunately.
+It might even be something like "localhost".  
+
+For each opponent, Netris may send 0 or more flags associated with the
+opponent.  For each flag which is true, Netris sends
+"OpponentFlag <player> <flag>".  Currently, the flags are "robot" and
+"fairRobot".
+
+Next, Netris sends "TickLength <seconds>", where <seconds> is the number
+of seconds between pieces stepping down.
+
+Finally, a "BeginGame" command is sent to the robot.
+
+
+NORMAL GAME (Netris --> robot)
+==============================
+Here's a list of commands sent from Netris to the robot, and a brief
+description of each one.
+
+Exit
+----
+This is always sent to the robot when the game is over, for any reason.
+The robot should exit immediately.
+
+NewPiece <num>
+--------------
+This command is never sent in "fair" robot mode.
+
+Every time a new piece is created, this command is sent to the robot.
+<num> is a positive integer uniquely identifying the piece.  <num> should
+be sent as a parameter to each movement command (sent to Netris) in
+order to prevent accidental movement of the wrong piece.
+
+TimeStamp <seconds>
+-------------------
+This command may be sent to the robot at any time.  <seconds> is
+a floating point number of seconds since the beginning of the game.
+One is always sent immediately after "BeginGame" and "RowUpdate" commands.
+One will be sent at least every tick (see "TickLength") unless the game
+is paused.
+
+RowUpdate <player> <row> <col0> <col1> <col2> ... <coln>
+--------------------------------------------------------
+Whenever the screen changes, a group of these commands is sent to the
+robot followed by a "TimeStamp".  After a "RowUpdate" command, the robot's
+view of the board is incorrect until the "TimeStamp".
+
+<player> is 0 for the computer player and positive numbers for opponents.
+<row> is an integer from 0 to boardHeight-1.  0 is the bottom row.
+
+<col0> ... <coln> are integers separated by spaces, one for each column.
+"0" indicates an empty square.  Positive integers indicate blocks.
+Currently only "1" is used, but in the future there may be special kinds of
+blocks indicated by higher numbers.  Negative integers indicate part of
+the currently falling piece.  For each block, the absolute value of the
+number indicates the type of piece, and the sign indicates whether it is
+currently falling.
+
+If Netris is in "fair robot" (-F) mode, Netris will not highlight the
+falling piece with negative numbers.  In this case, all numbers will
+be non-negative.
+
+UserKey <key> <keyname>
+-----------------------
+Whenever the user presses a key, this command is sent to the robot.  The
+key is not automatically interpreted by Netris.
+
+<key> is the ascii value of the key, from 0 to 255.  <keyname> is one
+of the following strings: "Left", "Rotate", "Right", "Drop", "Down",
+"ToggleSpy", "Pause", or "?".  When possible, you should use <keyname>,
+since it will pay attention to keyboard remappings.
+
+For each possible <keyname> (other than "?"), there's an equivalent
+command recognized by Netris from the robot which performs the equivalent
+of the key.  Therefore, if you want give the user "manual" control, you
+can send Netris "<keyname> <piecenum>".
+
+Pause <pausedByMe> <pausedByThem>
+---------------------------------
+<pausedByMe> is 0 or 1, indicating whether the game is currently paused by
+our side.  <pausedByThem> is 0 or 1, indicating whether any player other
+than our side has paused the game.  If either is 1, the game is paused.
+
+You may actually receive this command even when neither of the flags change.
+
+
+NORMAL GAME (robot --> Netris)
+==============================
+Here's a list of commands recognized by Netris from the robot:
+
+Left <num>
+Rotate <num>
+Right <num>
+Drop <num>
+Down <num>
+ToggleSpy <num>
+Pause <num>
+---------------
+These commands perform the equivalent of typing the corresponding command
+on the keyboard, if you weren't in robot mode.  
+
+<num> is checked against the current piece number (the value sent along
+with "NewPiece" commands).  If it doesn't match, the command is ignored.
+However, in "fair robot" mode, the <num> is ignored.
+
+These commands (except "Pause") are also ignored if the game is paused.
+
+Message <message>
+-----------------
+<message> is printed on the messages part of the display.  Messages too
+long to fit on the screen may be truncated.
+
+<message> may contain spaces and printable characters only.
+
+
+EXAMPLE
+=======
+Here's a portion of an example log generated by the sample robot.  The
+sample robot generates a log file in "log" if the "-l" option is given
+to sr (eg "netris -r 'sr -l'").
+
+In this log file, every line is preceeded by two characters.  Lines
+sent from Netris to the robot are preceeded by two spaces "  ", and
+lines sent to Netris are preceeded by "> ".
+
+> Version 1
+  Version 1
+  GameType OnePlayer
+  BoardSize 0 20 10
+  TickLength 0.300
+  BeginGame
+  TimeStamp 0.009
+  NewPiece 1
+  RowUpdate 0 19 0 0 0 0 0 -1 -1 0 0 0
+  TimeStamp 0.010
+  RowUpdate 0 19 0 0 0 0 -1 -1 0 0 0 0
+  RowUpdate 0 18 0 0 0 0 0 -1 -1 0 0 0
+  TimeStamp 0.314
+> Message Goal 0 : ** :**  :    :    :
+> Left 1
+  TimeStamp 0.352
+  RowUpdate 0 19 0 0 0 -1 -1 0 0 0 0 0
+  RowUpdate 0 18 0 0 0 0 -1 -1 0 0 0 0
+  TimeStamp 0.362
+> Left 1
+  RowUpdate 0 19 0 0 -1 -1 0 0 0 0 0 0
+  RowUpdate 0 18 0 0 0 -1 -1 0 0 0 0 0
+  TimeStamp 0.375
+> Left 1
+  RowUpdate 0 19 0 -1 -1 0 0 0 0 0 0 0
+  RowUpdate 0 18 0 0 -1 -1 0 0 0 0 0 0
+  TimeStamp 0.387
+> Left 1
+  RowUpdate 0 19 -1 -1 0 0 0 0 0 0 0 0
+  RowUpdate 0 18 0 -1 -1 0 0 0 0 0 0 0
+  TimeStamp 0.399
+> Drop 1
+  RowUpdate 0 19 0 0 0 0 0 0 0 0 0 0
+  RowUpdate 0 18 0 0 0 0 0 0 0 0 0 0
+  RowUpdate 0 1 -1 -1 0 0 0 0 0 0 0 0
+  RowUpdate 0 0 0 -1 -1 0 0 0 0 0 0 0
+  TimeStamp 0.413
+  NewPiece 2
+  RowUpdate 0 19 0 0 0 0 0 -1 0 0 0 0
+  RowUpdate 0 1 1 1 0 0 0 0 0 0 0 0
+  RowUpdate 0 0 0 1 1 0 0 0 0 0 0 0
+  TimeStamp 0.715
+  RowUpdate 0 19 0 0 0 0 -1 -1 -1 0 0 0
+  RowUpdate 0 18 0 0 0 0 0 -1 0 0 0 0
+  TimeStamp 1.014
+> Message Goal 3 :*** : *  :    :    :
+> Rotate 2
+  TimeStamp 1.053
+  RowUpdate 0 19 0 0 0 0 0 -1 -1 0 0 0
+  RowUpdate 0 18 0 0 0 0 0 -1 0 0 0 0
+  TimeStamp 1.062
+  RowUpdate 0 19 0 0 0 0 0 -1 0 0 0 0
+  RowUpdate 0 18 0 0 0 0 0 -1 -1 0 0 0
+  RowUpdate 0 17 0 0 0 0 0 -1 0 0 0 0
+  TimeStamp 1.314
+> Rotate 2
+  RowUpdate 0 19 0 0 0 0 0 -1 0 0 0 0
+  RowUpdate 0 18 0 0 0 0 -1 -1 -1 0 0 0
+  RowUpdate 0 17 0 0 0 0 0 0 0 0 0 0
+  TimeStamp 1.326
+[...]
+  Exit
+
+
+# vi: tw=70 ai

@@ -1,0 +1,129 @@
+#
+# Netris
+# Frequently asked questions
+#
+# $Id: FAQ,v 1.4 1999/05/16 06:56:21 mhw Exp $
+#
+
+Questions
+=========
+[1] Where can I find the latest version?
+[2] The pieces look bizarre in my xterm window, and don't erase
+    properly.  What's up?
+[3] If I drop a piece and then slide it off a cliff, shouldn't
+    it automatically drop again?
+[4] When I try to play a networked game, it just hangs.
+[5] Is the game fair?  Is there an advantage to being the -w or the
+    -c player?
+[6] I'm using a slow terminal, and the game response is sluggish.
+    What can I do?
+[7] Why can't my terminal hide the cursor?
+[8] Occasionally when clearing a line, the display jerks, scrolling
+    very awkwardly.  How can I fix it?
+
+Answers
+=======
+[1] Where can I find the latest version?
+
+    ftp://ftp.netris.org/pub/netris/
+
+    The latest version is available via anonymous ftp from
+    ftp.netris.org in /pub/netris.
+    
+    Unfortunately this machine is currently on the far end of a
+    14.4kbps modem connection, and may go away at any time without
+    notice, but I'll do my best to keep it up.  If you have trouble
+    contacting the ftp server, try mailing me at <mhw@netris.org>.
+
+[2] The pieces look bizarre in my xterm window, and don't erase
+    properly.  What's up?
+
+    Try disabling standout mode with the -S option.  If this fixes it,
+    it's probably because the bold font on your xterm is set wrong.
+    It's a good idea to fix it, since the blocks look much nicer when
+    they're inverse.
+
+    If the blocks don't erase correctly and are drawn larger than normal
+    characters, check your .Xdefaults file.  If you set the "font", make
+    sure you also set the "boldFont" to something of the same size.  For
+    example, I use 6x10 font for xterms, and here are the relevant lines
+    from my xterm.
+
+    txterm*font:	6x10
+    txterm*boldFont:	6x10
+
+    Make sure you capitalize the F in "boldFont"
+
+[3] If I drop a piece and then slide it off a cliff, shouldn't
+    it automatically drop again?
+
+    Try the -D option.
+
+[4] When I try to play a networked game, it just hangs.
+
+    There are two possibilities.  First, versions 0.1d? are incompatible
+    with current versions.  This is unfortunate, but remember, those were
+    very developmental versions.  I needed to fix up the protocol, and
+    I didn't want a whole bunch of messy compatibility code (at least
+    not yet :-)  Ask your opponent to get the latest version.
+
+    The other possibility is that you've typed in the wrong hostname, or
+    there's a port number mismatch, if either of you used the -p option.
+
+[5] Is the game fair?  Is there an advantage to being the -w or the
+    -c player?
+
+    The game is fair.  The game is completely symmetric once the
+    connection is established.  Furthermore, a random number seed is
+    exchanged at the start of the game, so both players will get the
+    same pieces.
+
+    There is a built-in random number generator, so even if the C
+    library on your system has a non-standard generator, both
+    players will still get the same sequence.
+
+    There is no attempt to synchronize the start of the game
+    accurately for networks with high latency.  This should be fixed
+    at some point, but I doubt such a small head start makes much
+    difference for a game lasting several minutes.
+
+[6] I'm using a slow terminal, and the game response is sluggish.
+    What can I do?
+
+    Try the -S option.  This disables use of standout mode (bold/inverse),
+    which require control sequences to be sent twice (or more) per line.
+    Standout mode makes the pieces look much more like blocks, but can
+    make the game unplayable on a slow terminal.
+
+    Also, you can type 's' to toggle spying (updating your view of the
+    opponent's board).
+
+[7] Why can't my terminal hide the cursor?
+
+    Netris uses the termcap library to look up the "vi" and "ve"
+    capabilities, which make the cursor invisible/visible
+    respectively.  These capabilities aren't very consistently
+    reported among un*xes, so I use compiled-in vt220 codes for
+    several vt100-like terminals.  Most emulators probably won't
+    support the codes, but they'll probably ignore them quietly.
+
+    Try setting the TERM environment variable to "vt100" or "vt220"
+    before running Netris.  If that doesn't work, your terminal
+    probably doesn't support cursor invisibility.
+
+[8] Occasionally when clearing a line, the display jerks, scrolling
+    very awkwardly.  How can I fix it?
+
+    You can try running ./Configure with the "--curses-hack" option
+    and recompile.  This utilizes a non-portable hack which will only
+    work with certain curses libraries, so it's disabled by default.
+
+    All screen updating is done by your curses library, which means
+    it's not something that Netris can control.  Netris never tells
+    curses to scroll, but curses does so automatically in order to
+    optimize screen updates.  This hack modifies curses's internal
+    variables, making it think that your terminal doesn't know how to
+    region-scroll.
+
+
+# vi: tw=70 ai
