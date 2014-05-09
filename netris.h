@@ -65,7 +65,7 @@ typedef long netint4;
 
 #define DEFAULT_PORT 9284	/* Very arbitrary */
 
-#define DEFAULT_KEYS "jkl mspf^ln"
+#define DEFAULT_KEYS "jJklL mspf^ln "
 
 /* Protocol versions */
 #define MAJOR_VERSION		1	

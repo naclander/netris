@@ -28,11 +28,11 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-enum { KT_left, KT_rotate, KT_right, KT_drop, KT_down,
+enum { KT_left, KT_full_left, KT_rotate, KT_right, KT_full_right, KT_drop, KT_down,
 	KT_toggleSpy, KT_pause, KT_faster, KT_redraw, KT_new, KT_numKeys };
 
 static char *keyNames[KT_numKeys+1] = {
-	"Left", "Rotate", "Right", "Drop", "Down", "ToggleSpy", "Pause",
+	"Left", "FullLeft","Rotate", "Right", "FullRight", "Drop", "Down", "ToggleSpy", "Pause",
 	"Faster", "Redraw", "New", NULL };
 
 static char *gameNames[GT_len] = { "OnePlayer", "ClassicTwo" };
@@ -161,7 +161,7 @@ ExtFunc void OneGame(int scr, int scr2)
 						SendPacket(NP_down, 0, NULL);
 					break;
 				case E_key:
-					p = strchr(keyTable, tolower(event.u.key));
+					p = strchr(keyTable, event.u.key);
 					key = p - keyTable;
 					if (robotEnable) {
 						RobotCmd(1, "UserKey %d %s\n",
@@ -179,10 +179,26 @@ ExtFunc void OneGame(int scr, int scr2)
 							if (MovePiece(scr, 0, -1) && spied)
 								SendPacket(NP_left, 0, NULL);
 							break;
+						case KT_full_left: {
+							int i = 0;
+							for(;i < MAX_BOARD_WIDTH; i++){
+								if (MovePiece(scr, 0, -1) && spied)
+									SendPacket(NP_left, 0, NULL);
+							}
+							break;
+						}
 						case KT_right:
 							if (MovePiece(scr, 0, 1) && spied)
 								SendPacket(NP_right, 0, NULL);
 							break;
+						case KT_full_right: {
+							int i = 0;
+							for(; i < MAX_BOARD_WIDTH; i++){
+								if (MovePiece(scr, 0, 1) && spied)
+									SendPacket(NP_right, 0, NULL);
+							}
+							break;
+						}
 						case KT_rotate:
 							if (RotatePiece(scr) && spied)
 								SendPacket(NP_rotate, 0, NULL);
