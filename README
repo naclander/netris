@@ -100,8 +100,10 @@ use the -D option.
 
 The keys are:
  'j'    left
+ 'J'    full left
  'k'    rotate
  'l'    right
+ 'L'    full right
  Space	drop
  'm'    down faster
  's'	toggle spying on the other player
