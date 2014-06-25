@@ -118,7 +118,7 @@ To use a port number other than the default, use the -p option.
 
 You can remap the keys with "-k <keys>", where <keys> is a string
 containing the keys in the order listed above.  The default is:
-    netris -k "jkl mspf^l"
+    netris -k "jJklL mspf^ln"
 
 You needn't specify all of the keys, for example -k "asd" will only
 change the main three keys.  "^x" notation can be used for control
